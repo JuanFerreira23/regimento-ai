@@ -74,7 +74,7 @@ export function Sobre() {
           <li>Cobre só os 10 documentos listados acima. Normas mais novas ou de outros cursos não estão incluídas.</li>
           <li>Os documentos têm vigências diferentes (2021 a 2026) e às vezes se contradizem, como na carga de atividades complementares (210 h-a × 60 h-a).</li>
           <li>As 9 páginas escaneadas do PPC (ata do CEPE) ficaram fora do índice, e o PDF de extensão tem erros de OCR.</li>
-          <li>O banco de avaliação tem 50 perguntas e ainda não foi revisado por um humano: os números são preliminares.</li>
+          <li>O banco de avaliação tem 50 perguntas, todas revisadas manualmente pelo grupo. Com 50 perguntas, os intervalos de confiança ainda são largos.</li>
           <li>Modelos de linguagem podem errar mesmo com as fontes. Confira sempre a página citada.</li>
         </ul>
       </Bloco>

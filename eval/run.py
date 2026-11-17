@@ -178,7 +178,7 @@ def gravar_saidas(perguntas: list[dict], progresso: Progresso, status: str, past
         "config": progresso.meta,
         "n_perguntas": len(perguntas),
         "revisadas": sum(bool(p["revisado"]) for p in perguntas),
-        "aviso": "Gabarito ainda não revisado por humano (revisado=false): números preliminares.",
+        "aviso": None if all(p["revisado"] for p in perguntas) else "Gabarito ainda não revisado por humano (revisado=false): números preliminares.",
         "recuperacao": {"recall_at_3": round(sum(rec) / len(rec), 4) if rec else None, "acertos": sum(rec),
                         "n": len(rec), "ic95": bootstrap_ic([1.0 if x else 0.0 for x in rec]),
                         "recall_contexto": round(sum(rec_ctx) / len(rec_ctx), 4) if rec_ctx else None,

@@ -48,8 +48,8 @@ def validar(perguntas: list[dict]) -> tuple[list[str], dict]:
             continue
         if p["categoria"] not in CATEGORIAS:
             erros.append(f"{pid}: categoria inválida {p['categoria']}")
-        if p["revisado"] is not False:
-            erros.append(f"{pid}: rascunho deve ter revisado=false")
+        if not isinstance(p["revisado"], bool):
+            erros.append(f"{pid}: revisado deve ser true ou false")
         if not p["respondivel"]:
             if p["documento"] is not None or p["pagina"] is not None:
                 erros.append(f"{pid}: pergunta sem resposta deve ter documento e página nulos")

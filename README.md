@@ -83,29 +83,45 @@ Para medir a busca isoladamente: `python -m backend.medir_recuperacao` (hit@1 e 
 
 ## Resultados
 
-> **Números preliminares:** o gabarito das 50 perguntas foi gerado a partir dos PDFs e ainda **não foi revisado por um humano** (`revisado: false`).
-
-Experimento de 11 e 12/11/2026: as mesmas 50 perguntas (45 com resposta nos documentos, 5 sem) respondidas pelo **mesmo LLM** (`gemini-3.5-flash-lite`, plano gratuito, temperatura 0) **sem RAG** e **com RAG**, julgadas por um modelo de outro fornecedor (`openai/gpt-oss-120b` no Groq; a conta não tinha Llama grande de chat disponível).
-
-> **Execução incompleta no modo com RAG:** depois da melhoria do retriever (v2), o modo com RAG foi refeito por inteiro. As 50 respostas foram geradas, mas **3 julgamentos (Q43, Q44, Q45) ficaram pendentes** porque o juiz bateu na cota do plano gratuito do Groq. Os números com RAG v2 abaixo são sobre **47 perguntas julgadas** (42 com resposta + 5 sem). Para concluir: `python -m eval.run` (continua de onde parou).
+Experimento de 17/11/2026, completo (100 respostas, 100 julgamentos): as mesmas 50 perguntas (45 com resposta nos documentos, 5 sem) respondidas pelo **mesmo LLM** (`gemini-3.5-flash-lite`, plano gratuito, temperatura 0) **sem RAG** e **com RAG** (retriever v2), julgadas por um modelo de outro fornecedor (`openai/gpt-oss-120b` no Groq). O gabarito das 50 perguntas foi **revisado manualmente pelo grupo** antes da rodada (`revisado: true` em todas).
 
 ![Taxa de alucinação sem RAG × com RAG](docs/figuras/alucinacao_sem_vs_com_rag.png)
 
-| Métrica | Sem RAG | Com RAG, retriever v1 | **Com RAG, retriever v2 (atual)** |
-|---|---|---|---|
-| **Alucinação** | **54% (27/50)** · IC 95% bootstrap 40–68% · Wilson 40,4–67,0% | 2% (1/50) · Wilson 0,4–10,5% | **0% (0/47)** · Wilson 0–7,6% |
-| **Acurácia** (correta = 1, parcial = 0,5) | **33,3%** (45) · IC 95% 22–46% | 85,6% (45) · IC 76–94% | **90,5%** (42) · IC 81–98% |
-| Acurácia estrita (só "correta") | 22,2% (10/45) | 80,0% (36/45) | **88,1% (37/42)** |
-| **Recusa correta** (5 sem resposta) | **0/5** | 5/5 | **5/5** |
-| Recusa indevida | 0/45 | 3/45 (Q07, Q26, Q27) | 3/42 (Q26, Q40, Q42) |
-| **Recall@3** (página do gabarito entre as 3 do ranking) | — | 91,1% (41/45) | **91,1% (41/45)** · IC 82–98% |
-| **Recall no contexto** (inclui as páginas obrigatórias) | — | 91,1% | **95,6% (43/45)** |
-| **Precisão de citação** (válida e na página do gabarito) | — | 87,2% (41/47) | **83,3% (40/48)** |
-| Trecho literal confirmado no PDF | — | 100% | **100% (48/48)** |
+| Métrica | Sem RAG | **Com RAG** |
+|---|---|---|
+| **Alucinação** | **58% (29/50)** · IC 95% 44–72% · Wilson 44,2–70,6% | **0% (0/50)** · Wilson 0–7,1% |
+| **Acurácia** (correta = 1, parcial = 0,5) | **28,9%** (45) · IC 95% 18–41% | **93,3%** (45) · IC 95% 86–99% |
+| Acurácia estrita (só "correta") | 20,0% (9/45) | **91,1% (41/45)** |
+| **Recusa correta** (5 sem resposta) | **0/5** | **5/5** |
+| Recusa indevida | 0/45 | 2/45 (Q07, Q26) |
+| **Recall@3** (página do gabarito entre as 3 do ranking) | — | **91,1% (41/45)** · IC 95% 82–98% |
+| **Recall no contexto** (inclui as páginas obrigatórias) | — | **95,6% (43/45)** |
+| **Precisão de citação** (na página do gabarito) | — | 83,0% (44/53) |
+| Respostas com pelo menos uma citação correta | — | 97,7% |
+| Trecho literal confirmado no PDF | — | **100% (53/53)** |
+
+Acurácia por categoria:
+
+| Categoria | Sem RAG | Com RAG |
+|---|---|---|
+| Prazos e calendário (8) | 0% | **100%** |
+| Pré-requisitos (6) | 33% | **100%** |
+| Outros (11) | 55% | **95%** |
+| Trancamento (8) | 25% | **88%** |
+| Horas complementares e extensão (12) | 25% | **88%** |
 
 ![Acurácia por categoria](docs/figuras/acuracia_por_categoria.png)
 
 ![Recuperação e citações](docs/figuras/citacao_e_recall.png)
+
+### As 4 respostas com RAG que não foram "corretas"
+
+| Pergunta | Veredito do juiz | O que aconteceu | Juiz × revisão humana |
+|---|---|---|---|
+| Q07: prazo para trancar em 2026/2 sem assinatura | incorreta (recusou) | A página certa do calendário (p. 7) estava no contexto, mas o modelo respondeu "Não encontrei". Na rodada de 12/11 a mesma pergunta foi respondida certo: variação do modelo, não da busca. | Concorda |
+| Q26: horas de disciplinas optativas | incorreta (recusou) | Falha de busca: a página 21 do PPC não foi recuperada, só páginas do Regime Didático. Recusar foi melhor que inventar (sem RAG, o modelo inventou "255 horas"; o certo é 360). | Concorda |
+| Q15: carga de atividades complementares (conflito) | parcial | A resposta aponta a divergência e cita os dois valores (210 h-a no regulamento, 60 h-a no PPC). O juiz justificou dizendo que as 60 h foram omitidas, o que não é verdade. | **Discorda: erro do juiz** |
+| Q35: nota mínima para aprovação | parcial | Respondeu "nota igual ou superior a sessenta ou conceito S", sem a condição de frequência que está no gabarito. A pergunta não fala de frequência, então o gabarito é mais exigente que a pergunta. | Concorda, com ressalva |
 
 ### Retriever v2: o que mudou
 
@@ -114,7 +130,7 @@ Duas regras de **páginas obrigatórias**, que entram no contexto além das 3 p�
 1. **Calendário por semestre.** Quando a pergunta cita um semestre (2026/1, "primeiro semestre"), um prazo, uma data ou palavras como "quando", "início" e "último dia", entra a página do calendário daquele semestre. O semestre de cada página sai dos cabeçalhos de mês (março a julho = 2026/1). A página é escolhida por e5 + BM25 só dentro daquele semestre, com sinônimos de calendário ("começa" → "início") e prioridade para trechos com a mesma sequência de palavras da pergunta.
 2. **Conflito com o PPC.** Quando o regulamento de atividades complementares ou a resolução de extensão é recuperado, entra a página do corpo do PPC sobre o mesmo tema (todas as páginas do trecho, se ele atravessar duas), para o modelo poder apontar a divergência.
 
-O que isso consertou e o que piorou, pergunta a pergunta:
+Comparação v1 × v2 feita na rodada de 12/11 (gabarito ainda não revisado), pergunta a pergunta:
 
 | Pergunta | v1 | v2 |
 |---|---|---|
@@ -126,16 +142,17 @@ O que isso consertou e o que piorou, pergunta a pergunta:
 | Q18: horas por artigo completo | correta | **parcial**, efeito colateral da regra 2: o PPC entrou, o modelo falou de divergência e omitiu o limite de 90 h-a |
 | Q40 e Q42 (TCC) | corretas | recusas: contexto idêntico ao v1; o verificador descartou a resposta. Ao reproduzir, as duas passaram. Variação do modelo, não do retriever |
 
-Fora do banco, a pergunta "Até quando posso trancar a matrícula em 2026/1?" agora responde "10 de abril (sem depender da assinatura dos professores) e 21 de maio (com comprovação de frequência)" e cita o calendário, p. 4.
+Fora do banco, a pergunta "Até quando posso trancar a matrícula em 2026/1?" responde "10 de abril (sem depender da assinatura dos professores) e 21 de maio (com comprovação de frequência)" e cita o calendário, p. 4.
 
 Como ler:
 
-- **Sem RAG**, o modelo responde tudo com segurança, inclusive as 5 perguntas sem resposta nos documentos (0/5 recusas corretas), e inventa números em mais da metade das respostas. Exemplo: dá "quatro semestres" de trancamento, quando o Regime Didático diz até cinco vezes. A pior categoria é prazos/calendário (6%); com RAG v2 ela vai a 100%.
-- A **precisão de citação é conservadora**: várias citações "fora da página do gabarito" estão certas, porque o PPC repete conteúdo em várias páginas. Ela caiu no v2 porque o modelo passou a citar também as páginas obrigatórias do PPC.
-- **Temperatura 0 não garante a mesma resposta**: Q40 e Q42 mudaram sem nenhuma mudança no contexto. A partir desta versão, o texto descartado pelo verificador fica salvo (`resposta_descartada`) para auditoria.
+- **Sem RAG**, o modelo responde tudo com segurança, inclusive as 5 perguntas sem resposta nos documentos (0/5 recusas corretas; chega a responder o cardápio do restaurante universitário), e inventa informação em 58% das respostas. A pior categoria é prazos e calendário (0%); com RAG ela vai a 100%.
+- **Com RAG, nenhuma das 50 respostas inventou informação.** Quando o sistema erra, ele recusa (Q07, Q26) em vez de inventar.
+- A **precisão de citação é conservadora**: várias citações "fora da página do gabarito" estão certas, porque o PPC repete conteúdo em várias páginas. Por isso a métrica de respostas com pelo menos uma citação correta (97,7%) descreve melhor o que o usuário vê.
+- **Temperatura 0 não garante a mesma resposta**: Q07 acertou em 12/11 e recusou em 17/11 com a mesma página no contexto. O texto descartado pelo verificador fica salvo (`resposta_descartada`) para auditoria.
 - Busca, 7 consultas de validação (`python -m backend.medir_recuperacao`): hit@3 de 5/7 (só e5) para 6/7 (híbrido); hit@1 de 4/7 para 3/7.
 
-Detalhes, por pergunta, em `eval/resultados/2026-11-12.csv` e `eval/resultados/resumo.json`.
+Detalhes, por pergunta, em `eval/resultados/2026-11-17.csv` e `eval/resultados/resumo.json`.
 
 ## Limitações
 
@@ -144,7 +161,7 @@ Detalhes, por pergunta, em `eval/resultados/2026-11-12.csv` e `eval/resultados/r
 - As 9 páginas escaneadas do PPC (ata do CEPE) ficaram fora do índice (sem OCR). O PDF da Resolução de extensão tem erros de OCR na origem.
 - Busca: o calendário repete as mesmas frases a cada semestre e o PPC repete informações em várias páginas, o que causa as 4 falhas de recall@3. O hit@1 do híbrido não melhorou em relação ao denso. As páginas obrigatórias (retriever v2) resolvem o calendário e os conflitos conhecidos, mas são regras específicas deste corpus e trazem páginas a mais quando não precisam (ver Q18).
 - 50 perguntas dão intervalos de confiança largos. Os resultados não generalizam para outros cursos.
-- O juiz é um LLM (`gpt-oss-120b`, prompt versionado em `eval/judge_prompt_v1.md`) e erra às vezes: a Q37 foi julgada alucinação no v1 e correta no v2, com respostas equivalentes. Não houve revisão humana dos vereditos.
+- O juiz é um LLM (`gpt-oss-120b`, prompt versionado em `eval/judge_prompt_v1.md`) e erra às vezes: na rodada de 17/11 ele deu "parcial" à Q15 alegando uma omissão que não existe, e na rodada de 12/11 julgou a Q37 como alucinação com uma resposta equivalente a outra que julgou correta. O gabarito foi revisado por humanos, mas só os vereditos negativos do modo com RAG foram conferidos à mão.
 - O plano gratuito limita o uso: o juiz no Groq tem 200 mil tokens por dia, e o experimento completo quase esgotou essa cota. O `eval.run` para com o progresso salvo e continua de onde parou.
 - Modelos de linguagem podem errar mesmo com as fontes. Confira sempre a página citada.
 

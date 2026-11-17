@@ -1,6 +1,6 @@
 {
- "gerado_em": "2026-11-12T10:51:21",
- "status": "interrompido",
+ "gerado_em": "2026-11-17T18:19:37",
+ "status": "completo",
  "config": {
   "provedor": "gemini",
   "modelo": "gemini-3.5-flash-lite",
@@ -9,27 +9,15 @@
   "temperatura": 0.0,
   "prompt": "v1",
   "prompt_juiz": "v1",
-  "hash_perguntas": "a575e6ff6f30",
+  "hash_perguntas": "ee6e23010a43",
   "embeddings": "intfloat/multilingual-e5-base",
   "max_paginas": 3,
   "verificador_citacoes": "v2",
-  "refeito": [
-   {
-    "modo": "rag",
-    "em": "2026-11-11T20:41:27",
-    "verificador": "v2"
-   },
-   {
-    "modo": "rag",
-    "em": "2026-11-12T10:14:38",
-    "verificador": "v2"
-   }
-  ],
   "retriever": "v2"
  },
  "n_perguntas": 50,
- "revisadas": 0,
- "aviso": "Gabarito ainda não revisado por humano (revisado=false): números preliminares.",
+ "revisadas": 50,
+ "aviso": null,
  "recuperacao": {
   "recall_at_3": 0.9111,
   "acertos": 41,
@@ -45,25 +33,25 @@
   "sem_rag": {
    "n_julgadas": 50,
    "n_respondiveis": 45,
-   "correta": 10,
-   "parcial": 10,
-   "incorreta": 25,
+   "correta": 9,
+   "parcial": 8,
+   "incorreta": 28,
    "recusas_em_respondiveis": 0,
-   "acuracia": 0.3333,
-   "acuracia_estrita": 0.2222,
+   "acuracia": 0.2889,
+   "acuracia_estrita": 0.2,
    "acuracia_ic95": [
-    0.2222,
-    0.4556
+    0.1778,
+    0.4111
    ],
-   "taxa_alucinacao": 0.54,
-   "alucinacoes": 27,
+   "taxa_alucinacao": 0.58,
+   "alucinacoes": 29,
    "taxa_alucinacao_ic95": [
-    0.4,
-    0.68
+    0.44,
+    0.72
    ],
    "taxa_alucinacao_ic95_wilson": [
-    0.404,
-    0.6703
+    0.4423,
+    0.7063
    ],
    "recusa_correta": {
     "acertos": 0,
@@ -71,17 +59,17 @@
    }
   },
   "rag": {
-   "n_julgadas": 47,
-   "n_respondiveis": 42,
-   "correta": 37,
+   "n_julgadas": 50,
+   "n_respondiveis": 45,
+   "correta": 41,
    "parcial": 2,
-   "incorreta": 3,
-   "recusas_em_respondiveis": 3,
-   "acuracia": 0.9048,
-   "acuracia_estrita": 0.881,
+   "incorreta": 2,
+   "recusas_em_respondiveis": 2,
+   "acuracia": 0.9333,
+   "acuracia_estrita": 0.9111,
    "acuracia_ic95": [
-    0.8095,
-    0.9762
+    0.8556,
+    0.9889
    ],
    "taxa_alucinacao": 0.0,
    "alucinacoes": 0,
@@ -91,17 +79,17 @@
    ],
    "taxa_alucinacao_ic95_wilson": [
     0.0,
-    0.0756
+    0.0714
    ],
    "recusa_correta": {
     "acertos": 5,
     "total": 5
    },
    "citacoes": {
-    "total": 48,
+    "total": 53,
     "literal_valido": 1.0,
-    "precisao_pagina": 0.8333,
-    "respostas_com_citacao_correta": 0.9744
+    "precisao_pagina": 0.8302,
+    "respostas_com_citacao_correta": 0.9767
    }
   }
  },
@@ -112,13 +100,13 @@
     "n": 8
    },
    "rag": {
-    "acuracia": 0.9375,
+    "acuracia": 0.875,
     "n": 8
    }
   },
   "pre-requisitos": {
    "sem_rag": {
-    "acuracia": 0.4167,
+    "acuracia": 0.3333,
     "n": 6
    },
    "rag": {
@@ -128,7 +116,7 @@
   },
   "horas-complementares-extensao": {
    "sem_rag": {
-    "acuracia": 0.3333,
+    "acuracia": 0.25,
     "n": 12
    },
    "rag": {
@@ -138,7 +126,7 @@
   },
   "prazos-calendario": {
    "sem_rag": {
-    "acuracia": 0.0625,
+    "acuracia": 0.0,
     "n": 8
    },
    "rag": {
@@ -152,14 +140,14 @@
     "n": 11
    },
    "rag": {
-    "acuracia": 0.75,
-    "n": 8
+    "acuracia": 0.9545,
+    "n": 11
    }
   }
  },
  "pendentes": {
   "sem_rag": 0,
-  "rag": 3
+  "rag": 0
  },
- "csv": "2026-11-12.csv"
+ "csv": "2026-11-17.csv"
 }
